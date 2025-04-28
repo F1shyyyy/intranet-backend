@@ -5,6 +5,8 @@ import shared.User;
 import java.sql.*;
 import java.util.*;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 public class UsersDataSourceImpl implements UsersDataSource {
     // singleton
     private static UsersDataSource instance;
@@ -20,7 +22,7 @@ public class UsersDataSourceImpl implements UsersDataSource {
     private UsersDataSourceImpl() {
         this.url = "jdbc:mysql://localhost/sis";
         this.username = "root";
-        this.password = "";
+        this.password = "99.Drapek.99";
 
     }
 
@@ -47,6 +49,8 @@ public class UsersDataSourceImpl implements UsersDataSource {
             throw new DataSourceException(e);
         }
     }
+
+    
 
     @Override
     public boolean saveUser(User user) throws DataSourceException {
@@ -90,5 +94,24 @@ public class UsersDataSourceImpl implements UsersDataSource {
         } catch (SQLException e) {
             throw new DataSourceException(e);
         }
+    }
+
+    @Override
+    public User logIn(String username, char[] password) throws DataSourceException {
+        try {
+            Connection connection = DriverManager.getConnection(this.url, this.username, this.password);
+            try (PreparedStatement stmt = connection.prepareStatement("SELECT ID, username, heslo, lastLogin FROM uzivatel WHERE username = ?")){
+                stmt.setString(1, username);
+                try (ResultSet result = stmt.executeQuery()){
+                    if (result.next() && BCrypt.checkpw(String.valueOf(password), result.getString(3))){
+                        return new User().setId(result.getLong(1)).setUsername(result.getString(2)).setHeslo(result.getString(3)).setLastLogin(result.getTimestamp(4).toLocalDateTime());
+                    }
+                }
+            }
+        } catch (SQLException exc){
+            exc.printStackTrace();
+        }
+
+        return null;
     }
 }

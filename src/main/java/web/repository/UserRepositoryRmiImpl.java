@@ -23,7 +23,7 @@ public class UserRepositoryRmiImpl implements UserRepository{
 
     public UserRepositoryRmiImpl() {
         try {
-            this.connection = (Users)Naming.lookup("rmi://localhost:1234/users");
+            this.connection = (Users)Naming.lookup("rmi://localhost:1099/users");
         } catch (NotBoundException | MalformedURLException | RemoteException e) {
             e.printStackTrace();
             throw new RuntimeException(e);

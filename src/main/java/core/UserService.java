@@ -8,6 +8,7 @@ import shared.Users;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -40,5 +41,16 @@ public class UserService extends UnicastRemoteObject implements Users {
     @Override
     public boolean saveUser(User user) throws RemoteException {
         return false;
+    }
+
+    @Override
+    public User logIn(String username, char[] password) throws RemoteException {
+        UsersDataSource source = UsersDataSourceImpl.getInstance();
+        try {
+          return source.logIn(username, password);  
+        } catch (DataSourceException exc){
+
+        }
+        return null;
     }
 }

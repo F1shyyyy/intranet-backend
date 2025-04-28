@@ -10,5 +10,5 @@ public interface Users extends Remote {
     List<User> getUsers(Predicate<User> condition) throws RemoteException;
     User getUserByID(Long id) throws RemoteException;
     boolean saveUser(User user) throws RemoteException;
-
+    User logIn(String username, char[] password) throws RemoteException;
 }
