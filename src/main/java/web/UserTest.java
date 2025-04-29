@@ -17,6 +17,7 @@ public class UserTest {
         do {
             String pozadavek = scanner.nextLine();
             if (pozadavek.equals( "log in")){
+                // přihlášení, když už je přihlášen taky nemůže nastat
                 try {
                     Users theService = (Users)Naming.lookup("rmi://localhost:1099/users");
 
@@ -29,6 +30,7 @@ public class UserTest {
                     if (result == null){
                         System.out.println("Uživatelské jméno nebo heslo se neshoduje");
                     } else {
+                        Session.logInUser(result);
                         System.out.println(String.format("Uživateli %s byl jste přihlášen", result.getUsername()));
                     }
                     
@@ -36,8 +38,14 @@ public class UserTest {
                 } catch (MalformedURLException | RemoteException | NotBoundException e){
                     e.printStackTrace();
                 }
-            } else {
-                System.out.println("ahaaa");
+            } else if (pozadavek.equals("log out")){
+                if (Session.isLoggedIn()){
+                    Session.logOutUser();
+                    System.out.println("Byl jste úspěšně přihlášen");
+                } else { // nemůže nastat v produkci
+                    System.out.println("Nejste přihlášen, aby jste se mohl přihlásit");
+                }
+                
             }
             
         } while (true);
